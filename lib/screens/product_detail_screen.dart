@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'ReviewsScreen.dart';
+
 // Placeholder images from picsum.photos (reliable for demos)
 const String _mainImageUrl = 'https://i.ibb.co/PRkGz8j/T1.png';
 const List<String> _thumbnailUrls = [
@@ -7,6 +9,7 @@ const List<String> _thumbnailUrls = [
   'https://i.ibb.co/sLY9Qrv/T3.png',
   'https://i.ibb.co/hJmhCNVS/T4.png',
   'https://i.ibb.co/jkcn237D/T5.png',
+  'https://i.ibb.co/PRkGz8j/T1.png',
 ];
 const String _reviewerImageUrl = 'https://i.ibb.co/PRkGz8j/T1.png';
 
@@ -210,19 +213,35 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   // 6. Reviews Section
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Text(
+                    children: [
+                      const Text(
                         "Reviews",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(
-                        "View All",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w500,
+                      GestureDetector(
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('View all reviews')),
+                          );
+                          Navigator.push(context,
+                            MaterialPageRoute(
+                              builder: (contex) {
+                                return ReviewsScreen();
+                              },
+                            ),
+                          );
+
+                        },
+                        child: const Text(
+                          "View All",
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w500,
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
                       ),
                     ],
