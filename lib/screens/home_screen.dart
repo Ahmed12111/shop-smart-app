@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shop_smart/screens/product_detail_screen.dart';
 
 // You would define a main() function and run MyApp()
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String _selectedBrand = 'Nike';
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +81,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 15),
 
             // 4. Brand List (Horizontal Scroll)
-            _buildBrandList(),
+            _buildBrandList(context),
             const SizedBox(height: 30),
 
             // 5. New Arrival Section Header
@@ -144,36 +152,43 @@ class HomeScreen extends StatelessWidget {
     );
   }
   
-  Widget _buildBrandItem({required String name, required String imagePath}) {
-    bool isSelected = name == 'Nike';
+  Widget _buildBrandItem(BuildContext context, {required String name, required String imagePath}) {
+    bool isSelected = name == _selectedBrand;
     
-    return Container(
-      margin: const EdgeInsets.only(right: 15),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF292929) : const Color(0xFFF5F6FA),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Display the brand logo
-          _buildBrandLogo(imagePath, isSelected),
-          const SizedBox(width: 4),
-          // Display the brand name
-          Flexible(
-            child: Text(
-              name,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedBrand = name;
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF292929) : const Color(0xFFF5F6FA),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Display the brand logo
+            _buildBrandLogo(imagePath, isSelected),
+            const SizedBox(width: 4),
+            // Display the brand name
+            Flexible(
+              child: Text(
+                name,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 11,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -218,17 +233,17 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBrandList() {
+  Widget _buildBrandList(BuildContext context) {
     // In a real app, 'imagePath' would be used to display the logo.
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          _buildBrandItem(name: 'Adidas', imagePath: 'assets/home_screen_assets/adidas_logo.png'),
-          _buildBrandItem(name: 'Nike', imagePath: 'assets/home_screen_assets/nike_logo.png'),
-          _buildBrandItem(name: 'Fila', imagePath: 'assets/home_screen_assets/fila_logo.svg'),
-          _buildBrandItem(name: 'Puma', imagePath: 'assets/home_screen_assets/puma_logo.svg'),
-          _buildBrandItem(name: 'Reebok', imagePath: 'assets/home_screen_assets/reebok_logo.svg'),
+          _buildBrandItem(context, name: 'Adidas', imagePath: 'assets/home_screen_assets/adidas_logo.png'),
+          _buildBrandItem(context, name: 'Nike', imagePath: 'assets/home_screen_assets/nike_logo.png'),
+          _buildBrandItem(context, name: 'Fila', imagePath: 'assets/home_screen_assets/fila_logo.svg'),
+          _buildBrandItem(context, name: 'Puma', imagePath: 'assets/home_screen_assets/puma_logo.svg'),
+          _buildBrandItem(context, name: 'Reebok', imagePath: 'assets/home_screen_assets/reebok_logo.svg'),
         ],
       ),
     );
@@ -245,14 +260,14 @@ class HomeScreen extends StatelessWidget {
         mainAxisSpacing: 15,
         childAspectRatio: 0.85, // Further increased ratio to prevent overflow
       ),
-      itemCount: 4, // Showing 4 items as per the screenshot
+      itemCount: 7, // Showing 4 items as per the screenshot
       itemBuilder: (context, index) {
-        return _buildProductCard(index);
+        return _buildProductCard(context, index);
       },
     );
   }
 
-  Widget _buildProductCard(int index) {
+  Widget _buildProductCard(BuildContext context, int index) {
     // Product card structure
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -264,13 +279,27 @@ class HomeScreen extends StatelessWidget {
           child: Stack(
             children: [
               // Placeholder for the product image
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: index.isEven ? Colors.lightGreen.shade100 : Colors.yellow.shade100, // Placeholder color
-                  borderRadius: BorderRadius.circular(10),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(context,
+                    MaterialPageRoute(
+                      builder: (contex) {
+                        return ProductDetailScreen();
+                      },
+                    ),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Clicked item $index')),
+                  );
+                },
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: index.isEven ? Colors.lightGreen.shade100 : Colors.yellow.shade100, // Placeholder color
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Center(child: Icon(Icons.image_outlined, size: 35, color: Colors.grey,)),
                 ),
-                child: const Center(child: Icon(Icons.image_outlined, size: 35, color: Colors.grey)),
               ),
               // Heart/Favorite Icon
               Positioned(
