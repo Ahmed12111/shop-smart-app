@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop_smart/screens/create_account_screen.dart';
+import 'package:shop_smart/screens/home_screen.dart';
 import 'package:shop_smart/widgets/custom_text_button.dart';
 
 class IntroductoryScreen extends StatelessWidget {
@@ -73,7 +74,8 @@ class IntroductoryScreen extends StatelessWidget {
                             height: 60,
                             child: CustomTextButton(
                               onPressed: (){
-                                
+                                Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => HomeScreen()));
                               },
                               backGroundColor: Color(0xFFF5F6FA),
                               text: "Men",
@@ -84,7 +86,10 @@ class IntroductoryScreen extends StatelessWidget {
                             width: 152,
                             height: 60,
                             child: CustomTextButton(
-                              onPressed: (){},
+                              onPressed: (){
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) => HomeScreen()));
+                              },
                               backGroundColor: Color(0xFF9775FA),
                               text: "Women",
                               textColor: Color(0xFFFFFFFF),
