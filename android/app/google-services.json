@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "414278712705",
+    "project_id": "to-do-app-70170",
+    "storage_bucket": "to-do-app-70170.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:414278712705:android:4b4202d3a0450815a0bc80",
+        "android_client_info": {
+          "package_name": "com.example.shop_smart_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "414278712705-trqbh0a48j9uv61mkc4aip9ds241mgn1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjs3hsg711qEljyeiH1Uaj0ZNYqHVoPes"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "414278712705-6le61u67mb7rcqmeceh0mvvgr1ai19oj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "414278712705-o7d5ioa1sol001h8jjk35ie0fa90h8a0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.shopSmartApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
