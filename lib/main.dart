@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shop_smart_app/consts/theme_data.dart';
 import 'package:shop_smart_app/firebase_options.dart';
 import 'package:shop_smart_app/providers/cart_provider.dart';
+import 'package:shop_smart_app/providers/order_provider.dart';
 import 'package:shop_smart_app/providers/product_provider.dart';
 import 'package:shop_smart_app/providers/theme_provider.dart';
 import 'package:shop_smart_app/providers/user_provider.dart';
@@ -41,6 +42,7 @@ class ShopSmartApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => WishlistProvider()),
         ChangeNotifierProvider(create: (context) => ViewedProdProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => OrdersProvider()),
       ],
       builder: (context, child) {
         return Consumer<ThemeProvider>(

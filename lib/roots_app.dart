@@ -20,7 +20,7 @@ class RootsApp extends StatefulWidget {
 
 class _RootsAppState extends State<RootsApp> {
   static int index = 0;
-
+  bool isLoading = true;
   late PageController controller;
 
   List<Widget> pages = const [
@@ -57,14 +57,14 @@ class _RootsAppState extends State<RootsApp> {
     } catch (error) {
     } finally {
       setState(() {
-        isLoadingProds = false;
+        isLoading = false;
       });
     }
   }
 
   @override
   void didChangeDependencies() {
-    if (isLoadingProds) {
+    if (isLoading) {
       fetchFCT();
     }
 

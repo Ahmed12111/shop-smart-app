@@ -1,18 +1,20 @@
-import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:shop_smart_app/consts/app_constants.dart';
+import 'package:shop_smart_app/models/order_model.dart';
+
 import 'package:shop_smart_app/widgets/custom_sub_title.dart';
 import 'package:shop_smart_app/widgets/custom_title_text.dart';
 
-class OrdersWidgetFree extends StatefulWidget {
-  const OrdersWidgetFree({super.key});
-
+class OrdersWidget extends StatefulWidget {
+  const OrdersWidget({super.key, required this.ordersModel});
+  final OrdersModel ordersModel;
   @override
-  State<OrdersWidgetFree> createState() => _OrdersWidgetFreeState();
+  State<OrdersWidget> createState() => _OrdersWidgetState();
 }
 
-class _OrdersWidgetFreeState extends State<OrdersWidgetFree> {
+class _OrdersWidgetState extends State<OrdersWidget> {
   bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -22,10 +24,18 @@ class _OrdersWidgetFreeState extends State<OrdersWidgetFree> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: FancyShimmerImage(
-              height: size.width * 0.25,
-              width: size.width * 0.25,
-              imageUrl: AppConstants.productImageUrl,
+            child: Image.memory(
+              base64Decode(widget.ordersModel.imageUrl),
+              height: size.width * 0.3,
+              alignment: Alignment.center,
+              fit: BoxFit.cover, // Better UX
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  height: size.width * 0.5,
+                  alignment: Alignment.center,
+                  child: const Icon(Icons.error, size: 50),
+                );
+              },
             ),
           ),
           Flexible(
@@ -37,29 +47,21 @@ class _OrdersWidgetFreeState extends State<OrdersWidgetFree> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Flexible(
+                      Flexible(
                         child: CustomTitleText(
-                          text: 'productTitle',
+                          text: widget.ordersModel.productTitle,
                           maxLines: 2,
                           fontSize: 15,
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.clear,
-                          color: Colors.red,
-                          size: 22,
-                        ),
-                      ),
                     ],
                   ),
-                  const Row(
+                  Row(
                     children: [
-                      CustomTitleText(text: 'Price:  ', fontSize: 15),
+                      const CustomSubTitle(text: 'Price:  ', fontSize: 15),
                       Flexible(
                         child: CustomSubTitle(
-                          text: "11.99 \$",
+                          text: "${widget.ordersModel.price} \$",
                           fontSize: 15,
                           color: Colors.blue,
                         ),
@@ -67,23 +69,10 @@ class _OrdersWidgetFreeState extends State<OrdersWidgetFree> {
                     ],
                   ),
                   const SizedBox(height: 5),
-                  const CustomSubTitle(text: "Qty: 10", fontSize: 15),
-                  // const Row(
-                  //   children: [
-                  //     Flexible(
-                  //       child: TitlesTextWidget(
-                  //         label: 'Qty:  ',
-                  //         fontSize: 15,
-                  //       ),
-                  //     ),
-                  //     Flexible(
-                  //       child: SubtitleTextWidget(
-                  //         label: "10",
-                  //         fontSize: 15,
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
+                  CustomSubTitle(
+                    text: "Qty: ${widget.ordersModel.quantity}",
+                    fontSize: 15,
+                  ),
                   const SizedBox(height: 5),
                 ],
               ),

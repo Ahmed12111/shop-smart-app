@@ -38,7 +38,6 @@ class CartProvider with ChangeNotifier {
         ]),
       });
       await fetchCart();
-      CustomSnackbar.showSuccess(context, "Item has been added to cart");
     } catch (e) {
       rethrow;
     }

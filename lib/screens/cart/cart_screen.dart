@@ -1,21 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
-import 'package:shop_smart_app/providers/cart_provider.dart';
-import 'package:shop_smart_app/providers/product_provider.dart';
-import 'package:shop_smart_app/providers/user_provider.dart';
 import 'package:shop_smart_app/screens/loading_manager.dart';
 import 'package:shop_smart_app/services/assets_manager.dart';
 import 'package:shop_smart_app/services/my_app_methods.dart';
 import 'package:shop_smart_app/widgets/cart/custom_bottom_checkout.dart';
 import 'package:shop_smart_app/widgets/cart/custom_cart_widget.dart';
-import 'package:shop_smart_app/widgets/custom_app_bar_title.dart';
-import 'package:shop_smart_app/widgets/custom_dialog_widget.dart';
+import 'package:shop_smart_app/widgets/custom_title_text.dart';
 import 'package:shop_smart_app/widgets/empty_cart_widget.dart';
 import 'package:uuid/uuid.dart';
+import '../../providers/cart_provider.dart';
+import '../../providers/product_provider.dart';
+import '../../providers/user_provider.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -25,8 +22,7 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  final bool isEmpty = false;
-  bool isLoading = true;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +32,7 @@ class _CartScreenState extends State<CartScreen> {
       context,
       listen: false,
     );
+
     return cartProvider.getCartItems.isEmpty
         ? Scaffold(
             body: EmptyBagWidget(
@@ -44,14 +41,12 @@ class _CartScreenState extends State<CartScreen> {
               subtitle:
                   'Looks like you didn\'t add anything yet to your cart \ngo ahead and start shopping now',
               buttonText: "Shop Now",
-              isButtoned: false,
-              onButtonPressed: () {},
             ),
           )
         : Scaffold(
             bottomSheet: CartBottomCheckout(
-              function: () {
-                placeOrder(
+              function: () async {
+                await placeOrder(
                   cartProvider: cartProvider,
                   productProvider: productProvider,
                   userProvider: userProvider,
@@ -59,28 +54,28 @@ class _CartScreenState extends State<CartScreen> {
               },
             ),
             appBar: AppBar(
-              title: CustomAppBarTitle(),
-              centerTitle: true,
+              title: CustomTitleText(
+                text: "Cart (${cartProvider.getCartItems.length})",
+              ),
               leading: Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: SvgPicture.asset(AssetsManager.smartLogo),
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset(AssetsManager.shoppingCart),
               ),
               actions: [
                 IconButton(
                   onPressed: () {
-                    DialogHelper.showDeleteConfirmation(
-                      context,
-                      itemName: 'All Cart',
-                      message:
-                          'This action cannot be undone. Are you sure you want to delete your cart?',
-                      onDelete: () async {
+                    MyAppMethods.showErrorORWarningDialog(
+                      isError: false,
+                      context: context,
+                      subtitle: "Remove items",
+                      fct: () async {
+                        cartProvider.clearLocalCart();
                         await cartProvider.clearCartFromFirebase();
                       },
                     );
                   },
                   icon: const Icon(
                     Icons.delete_forever_rounded,
-                    size: 20,
                     color: Colors.red,
                   ),
                 ),
@@ -99,13 +94,12 @@ class _CartScreenState extends State<CartScreen> {
                               .toList()
                               .reversed
                               .toList()[index],
-                          child: CartWidget(),
+                          child: const CartWidget(),
                         );
                       },
                     ),
                   ),
-
-                  Gap(90),
+                  const SizedBox(height: kBottomNavigationBarHeight + 10),
                 ],
               ),
             ),
