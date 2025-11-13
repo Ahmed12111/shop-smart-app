@@ -112,20 +112,32 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           ),
                                         ),
                                       ),
-                                      onPressed: () {
+                                      onPressed: () async {
                                         if (cartProvider.isProductInCart(
                                           productId:
                                               getCurrentProduct.productId,
                                         )) {
                                           CustomSnackbar.showError(
                                             context,
-                                            "This roduct is aleredy in cart!",
+                                            "This product is already in cart!",
+                                          );
+                                          return;
+                                        }
+                                        try {
+                                          await cartProvider.addToCartFirebase(
+                                            productId:
+                                                getCurrentProduct.productId,
+                                            qty: int.parse(
+                                              getCurrentProduct.productQuantity,
+                                            ),
+                                            context: context,
+                                          );
+                                        } catch (e) {
+                                          CustomSnackbar.showError(
+                                            context,
+                                            e.toString(),
                                           );
                                         }
-                                        cartProvider.addProductToCart(
-                                          productId:
-                                              getCurrentProduct.productId,
-                                        );
 
                                         CustomSnackbar.showSuccess(
                                           context,

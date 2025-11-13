@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_smart_app/providers/cart_provider.dart';
+import 'package:shop_smart_app/providers/product_provider.dart';
+import 'package:shop_smart_app/providers/user_provider.dart';
+import 'package:shop_smart_app/providers/wishlist_provider.dart';
 import 'package:shop_smart_app/screens/cart/cart_screen.dart';
 import 'package:shop_smart_app/screens/home_screen.dart';
 import 'package:shop_smart_app/screens/profile_screen.dart';
@@ -31,6 +34,41 @@ class _RootsAppState extends State<RootsApp> {
   void initState() {
     super.initState();
     controller = PageController(initialPage: index);
+  }
+
+  Future<void> fetchFCT() async {
+    final productsProvider = Provider.of<ProductProvider>(
+      context,
+      listen: false,
+    );
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final wishlistProvider = Provider.of<WishlistProvider>(
+      context,
+      listen: false,
+    );
+
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    try {
+      Future.wait({
+        productsProvider.fetchProducts(),
+        userProvider.fetchUserInfo(),
+      });
+      Future.wait({cartProvider.fetchCart(), wishlistProvider.fetchWishlist()});
+    } catch (error) {
+    } finally {
+      setState(() {
+        isLoadingProds = false;
+      });
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (isLoadingProds) {
+      fetchFCT();
+    }
+
+    super.didChangeDependencies();
   }
 
   @override

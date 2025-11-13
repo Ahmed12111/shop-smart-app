@@ -74,11 +74,15 @@ class CartWidget extends StatelessWidget {
                                         itemName: 'this product',
                                         message:
                                             'This action cannot be undone. Are you sure you want to delete your product?',
-                                        onDelete: () {
-                                          cartProvider.removeOneItem(
-                                            productId:
-                                                cartModelProvider.productId,
-                                          );
+                                        onDelete: () async {
+                                          await cartProvider
+                                              .removeCartItemFromFirebase(
+                                                cartId:
+                                                    cartModelProvider.cartId,
+                                                productId:
+                                                    cartModelProvider.productId,
+                                                qty: cartModelProvider.quantity,
+                                              );
                                         },
                                       );
                                     },

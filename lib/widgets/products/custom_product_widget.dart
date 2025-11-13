@@ -112,7 +112,7 @@ class _CustomProductWidgetState extends State<CustomProductWidget> {
                           child: InkWell(
                             splashColor: Colors.red,
                             borderRadius: BorderRadius.circular(16.0),
-                            onTap: () {
+                            onTap: () async {
                               if (cartProvider.isProductInCart(
                                 productId: getCurrentProduct.productId,
                               )) {
@@ -120,9 +120,10 @@ class _CustomProductWidgetState extends State<CustomProductWidget> {
                                   context,
                                   "This product is already in cart!",
                                 );
+                                return;
                               }
                               try {
-                                cartProvider.addToCartFirebase(
+                                await cartProvider.addToCartFirebase(
                                   productId: getCurrentProduct.productId,
                                   qty: int.parse(
                                     getCurrentProduct.productQuantity,

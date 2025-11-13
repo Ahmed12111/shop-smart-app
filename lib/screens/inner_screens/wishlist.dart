@@ -45,7 +45,15 @@ class WishlistScreen extends StatelessWidget {
                       message:
                           'This action cannot be undone. Are you sure you want to delete your wishlist?',
                       onDelete: () {
-                        wishListProvider.clearLocalWishlist();
+                        DialogHelper.showError(
+                          context,
+                          title: "Delete All Wish List",
+                          message: "Are you sure to delete all list",
+                          onPressed: () async {
+                            await wishListProvider.clearWishlistFromFirebase();
+                            wishListProvider.clearLocalWishlist();
+                          },
+                        );
                       },
                     );
                   },

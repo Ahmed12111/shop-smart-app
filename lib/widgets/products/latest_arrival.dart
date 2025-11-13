@@ -31,14 +31,12 @@ class LatestArrivalProductsWidget extends StatelessWidget {
       productModel.productId,
     );
 
-    // ✅ Prevent null product crashes
     if (getCurrentProduct == null) {
       return const SizedBox.shrink();
     }
 
     Size size = MediaQuery.of(context).size;
 
-    // ✅ Safe Base64 decoding
     Uint8List imageBytes;
     try {
       imageBytes = base64Decode(productModel.productImage);
@@ -97,9 +95,9 @@ class LatestArrivalProductsWidget extends StatelessWidget {
                             productId: getCurrentProduct.productId,
                           ),
                           IconButton(
-                            onPressed: () {
+                            onPressed: () async {
                               if (cartProvider.isProductInCart(
-                                productId: getCurrentProduct.productId,
+                                productId: productModel.productId,
                               )) {
                                 CustomSnackbar.showError(
                                   context,
@@ -107,14 +105,21 @@ class LatestArrivalProductsWidget extends StatelessWidget {
                                 );
                                 return;
                               }
-
-                              cartProvider.addProductToCart(
-                                productId: getCurrentProduct.productId,
-                              );
+                              try {
+                                await cartProvider.addToCartFirebase(
+                                  productId: productModel.productId,
+                                  qty: int.parse(
+                                    getCurrentProduct.productQuantity,
+                                  ),
+                                  context: context,
+                                );
+                              } catch (e) {
+                                CustomSnackbar.showError(context, e.toString());
+                              }
 
                               CustomSnackbar.showSuccess(
                                 context,
-                                "Product added to cart successfully.",
+                                "Product is added to cart Successfully.",
                               );
                             },
                             icon: Icon(

@@ -1,14 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_smart_app/providers/cart_provider.dart';
+import 'package:shop_smart_app/providers/product_provider.dart';
+import 'package:shop_smart_app/providers/user_provider.dart';
+import 'package:shop_smart_app/screens/loading_manager.dart';
 import 'package:shop_smart_app/services/assets_manager.dart';
+import 'package:shop_smart_app/services/my_app_methods.dart';
 import 'package:shop_smart_app/widgets/cart/custom_bottom_checkout.dart';
 import 'package:shop_smart_app/widgets/cart/custom_cart_widget.dart';
 import 'package:shop_smart_app/widgets/custom_app_bar_title.dart';
 import 'package:shop_smart_app/widgets/custom_dialog_widget.dart';
 import 'package:shop_smart_app/widgets/empty_cart_widget.dart';
+import 'package:uuid/uuid.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -19,10 +26,16 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   final bool isEmpty = false;
+  bool isLoading = true;
 
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final productProvider = Provider.of<ProductProvider>(
+      context,
+      listen: false,
+    );
     return cartProvider.getCartItems.isEmpty
         ? Scaffold(
             body: EmptyBagWidget(
@@ -36,7 +49,15 @@ class _CartScreenState extends State<CartScreen> {
             ),
           )
         : Scaffold(
-            bottomSheet: const CartBottomCheckout(),
+            bottomSheet: CartBottomCheckout(
+              function: () {
+                placeOrder(
+                  cartProvider: cartProvider,
+                  productProvider: productProvider,
+                  userProvider: userProvider,
+                );
+              },
+            ),
             appBar: AppBar(
               title: CustomAppBarTitle(),
               centerTitle: true,
@@ -52,8 +73,8 @@ class _CartScreenState extends State<CartScreen> {
                       itemName: 'All Cart',
                       message:
                           'This action cannot be undone. Are you sure you want to delete your cart?',
-                      onDelete: () {
-                        cartProvider.clearLocalCart();
+                      onDelete: () async {
+                        await cartProvider.clearCartFromFirebase();
                       },
                     );
                   },
@@ -65,26 +86,81 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ],
             ),
-            body: Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: cartProvider.getCartItems.length,
-                    itemBuilder: (context, index) {
-                      return ChangeNotifierProvider.value(
-                        value: cartProvider.getCartItems.values
-                            .toList()
-                            .reversed
-                            .toList()[index],
-                        child: CartWidget(),
-                      );
-                    },
+            body: LoadingManager(
+              isLoading: isLoading,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: cartProvider.getCartItems.length,
+                      itemBuilder: (context, index) {
+                        return ChangeNotifierProvider.value(
+                          value: cartProvider.getCartItems.values
+                              .toList()
+                              .reversed
+                              .toList()[index],
+                          child: CartWidget(),
+                        );
+                      },
+                    ),
                   ),
-                ),
 
-                Gap(90),
-              ],
+                  Gap(90),
+                ],
+              ),
             ),
           );
+  }
+
+  Future<void> placeOrder({
+    required CartProvider cartProvider,
+    required ProductProvider productProvider,
+    required UserProvider userProvider,
+  }) async {
+    final auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+    if (user == null) {
+      return;
+    }
+    final uid = user.uid;
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      cartProvider.getCartItems.forEach((key, value) async {
+        final getCurrProduct = productProvider.findProductById(value.productId);
+        final orderId = const Uuid().v4();
+        await FirebaseFirestore.instance
+            .collection("ordersAdvanced")
+            .doc(orderId)
+            .set({
+              'orderId': orderId,
+              'userId': uid,
+              'productId': value.productId,
+              "productTitle": getCurrProduct!.productTitle,
+              'price':
+                  double.parse(getCurrProduct.productPrice) * value.quantity,
+              'totalPrice': cartProvider.getTotal(
+                productProvider: productProvider,
+              ),
+              'quantity': value.quantity,
+              'imageUrl': getCurrProduct.productImage,
+              'userName': userProvider.getUserModel!.userName,
+              'orderDate': Timestamp.now(),
+            });
+      });
+      await cartProvider.clearCartFromFirebase();
+      cartProvider.clearLocalCart();
+    } catch (e) {
+      MyAppMethods.showErrorORWarningDialog(
+        context: context,
+        subtitle: e.toString(),
+        fct: () {},
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 }

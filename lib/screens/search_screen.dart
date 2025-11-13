@@ -61,73 +61,81 @@ class _SearchScreenState extends State<SearchScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: CustomAppBar(),
-        body: StreamBuilder<List<ProductModel>>(
-          stream: _productStream,
-          builder: (context, asyncSnapshot) {
-            if (asyncSnapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (asyncSnapshot.hasError) {
-              return Center(
-                child: CustomTitleText(text: asyncSnapshot.error.toString()),
-              );
-            } else if (!asyncSnapshot.hasData) {
-              return const Center(
-                child: CustomTitleText(text: "No product has been added."),
-              );
-            }
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: <Widget>[
-                  CustomTextField(
-                    onChanged: (value) =>
-                        _runSearch(value, productList, productProvider),
-                    onFieldSubmited: (value) =>
-                        _runSearch(value, productList, productProvider),
-                    prefixIcon: Icons.search,
-                    suffixIcon: Icons.clear,
-                    controller: searchEditingController,
-                    hintText: "Search",
-                    fillColor: Theme.of(context).cardColor,
-                    onSuffixIconTap: () {
-                      setState(() {
-                        searchEditingController.clear();
-                        productListSearch.clear();
-                      });
-                      FocusScope.of(context).unfocus();
-                    },
-                  ),
-                  const Gap(8),
-                  if (searchEditingController.text.isNotEmpty &&
-                      productListSearch.isEmpty) ...[
-                    ProductNotFoundWidget(
-                      onRetry: () {
-                        searchEditingController.clear();
-                        searchFocusingNode.requestFocus();
-                      },
+        body: productList.isEmpty
+            ? const Center(child: ProductNotFoundWidget())
+            : StreamBuilder<List<ProductModel>>(
+                stream: _productStream,
+                builder: (context, asyncSnapshot) {
+                  if (asyncSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (asyncSnapshot.hasError) {
+                    return Center(
+                      child: CustomTitleText(
+                        text: asyncSnapshot.error.toString(),
+                      ),
+                    );
+                  } else if (!asyncSnapshot.hasData) {
+                    return const Center(
+                      child: CustomTitleText(
+                        text: "No product has been added.",
+                      ),
+                    );
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: <Widget>[
+                        CustomTextField(
+                          onChanged: (value) =>
+                              _runSearch(value, productList, productProvider),
+                          onFieldSubmited: (value) =>
+                              _runSearch(value, productList, productProvider),
+                          prefixIcon: Icons.search,
+                          suffixIcon: Icons.clear,
+                          controller: searchEditingController,
+                          hintText: "Search",
+                          fillColor: Theme.of(context).cardColor,
+                          onSuffixIconTap: () {
+                            setState(() {
+                              searchEditingController.clear();
+                              productListSearch.clear();
+                            });
+                            FocusScope.of(context).unfocus();
+                          },
+                        ),
+                        const Gap(8),
+                        if (searchEditingController.text.isNotEmpty &&
+                            productListSearch.isEmpty) ...[
+                          ProductNotFoundWidget(
+                            onRetry: () {
+                              searchEditingController.clear();
+                              searchFocusingNode.requestFocus();
+                            },
+                          ),
+                        ],
+                        Expanded(
+                          child: DynamicHeightGridView(
+                            itemCount: searchEditingController.text.isNotEmpty
+                                ? productListSearch.length
+                                : productList.length,
+                            crossAxisCount: 2,
+                            builder: (context, index) {
+                              final product =
+                                  searchEditingController.text.isNotEmpty
+                                  ? productListSearch[index]
+                                  : productList[index];
+                              return CustomProductWidget(
+                                productId: product.productId,
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                  Expanded(
-                    child: DynamicHeightGridView(
-                      itemCount: searchEditingController.text.isNotEmpty
-                          ? productListSearch.length
-                          : productList.length,
-                      crossAxisCount: 2,
-                      builder: (context, index) {
-                        final product = searchEditingController.text.isNotEmpty
-                            ? productListSearch[index]
-                            : productList[index];
-                        return CustomProductWidget(
-                          productId: product.productId,
-                        );
-                      },
-                    ),
-                  ),
-                ],
+                  );
+                },
               ),
-            );
-          },
-        ),
       ),
     );
   }
