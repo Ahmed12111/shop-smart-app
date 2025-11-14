@@ -9,10 +9,6 @@ class ViewedProdProvider with ChangeNotifier {
     return _viewedProdItems;
   }
 
-  // bool isProductInviewedProd({required String productId}) {
-  //   return _viewedProdItems.containsKey(productId);
-  // }
-
   void addProductToHistory({required String productId}) {
     _viewedProdItems.putIfAbsent(
       productId,
@@ -21,9 +17,4 @@ class ViewedProdProvider with ChangeNotifier {
 
     notifyListeners();
   }
-
-  // void clearLocalviewedProd() {
-  //   _viewedProdItems.clear();
-  //   notifyListeners();
-  // }
 }

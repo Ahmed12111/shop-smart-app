@@ -7,7 +7,7 @@ import 'package:shop_smart_app/services/assets_manager.dart';
 import 'package:shop_smart_app/services/my_app_methods.dart';
 import 'package:shop_smart_app/widgets/cart/custom_bottom_checkout.dart';
 import 'package:shop_smart_app/widgets/cart/custom_cart_widget.dart';
-import 'package:shop_smart_app/widgets/custom_title_text.dart';
+import 'package:shop_smart_app/widgets/custom_app_bar_title.dart';
 import 'package:shop_smart_app/widgets/empty_cart_widget.dart';
 import 'package:uuid/uuid.dart';
 import '../../providers/cart_provider.dart';
@@ -41,6 +41,7 @@ class _CartScreenState extends State<CartScreen> {
               subtitle:
                   'Looks like you didn\'t add anything yet to your cart \ngo ahead and start shopping now',
               buttonText: "Shop Now",
+              isButtoned: false,
             ),
           )
         : Scaffold(
@@ -54,12 +55,11 @@ class _CartScreenState extends State<CartScreen> {
               },
             ),
             appBar: AppBar(
-              title: CustomTitleText(
-                text: "Cart (${cartProvider.getCartItems.length})",
-              ),
+              title: CustomAppBarTitle(),
+              centerTitle: true,
               leading: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Image.asset(AssetsManager.shoppingCart),
+                child: Image.asset("assets/images/bag/smart.png"),
               ),
               actions: [
                 IconButton(
@@ -144,7 +144,7 @@ class _CartScreenState extends State<CartScreen> {
             });
       });
       await cartProvider.clearCartFromFirebase();
-      cartProvider.clearLocalCart();
+      cartProvider.clearCartFromFirebase();
     } catch (e) {
       MyAppMethods.showErrorORWarningDialog(
         context: context,

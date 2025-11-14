@@ -106,8 +106,6 @@ class WishlistProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Local
-
   void addOrRemoveFromWishlist({required String productId}) {
     if (_wishlistItems.containsKey(productId)) {
       _wishlistItems.remove(productId);

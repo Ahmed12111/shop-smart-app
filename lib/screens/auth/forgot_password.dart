@@ -29,26 +29,38 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await AuthService.sendPasswordResetEmail(_emailController.text.trim());
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Reset link sent! Check your email'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 3),
-        ),
+      final error = await AuthService.sendPasswordResetEmail(
+        _emailController.text.trim(),
       );
 
-      Navigator.pop(context);
+      if (!mounted) return;
+
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error), backgroundColor: Colors.red),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Reset link sent! Check your email'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context);
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -75,24 +87,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             physics: const BouncingScrollPhysics(),
             children: [
               SizedBox(height: size.height * 0.04),
-
               Image.asset(
                 AssetsManager.forgotPassword,
                 width: size.width * 0.5,
                 height: size.width * 0.5,
               ),
-
               SizedBox(height: size.height * 0.02),
               const CustomTitleText(text: 'Forgot password', fontSize: 22),
               SizedBox(height: size.height * 0.02),
-
               const CustomSubTitle(
                 text: 'Enter your email to receive a password reset link',
                 fontSize: 14,
               ),
-
               SizedBox(height: size.height * 0.04),
-
               Form(
                 key: _formKey,
                 child: CustomTextField(
@@ -105,18 +112,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   onFieldSubmited: (_) => _forgetPassFCT(),
                 ),
               ),
-
               SizedBox(height: size.height * 0.04),
-
               CustomTextButton(
                 width: double.infinity,
                 borderRadius: 12,
                 icon: IconlyBold.send,
                 backgroundColor: Colors.blueAccent,
                 text: _isLoading ? 'Sending...' : 'Request link',
-                onPressed: () {
-                  _isLoading ? null : _forgetPassFCT;
-                },
+                onPressed: _forgetPassFCT,
               ),
             ],
           ),

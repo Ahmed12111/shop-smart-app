@@ -12,7 +12,6 @@ import 'package:shop_smart_app/widgets/custom_sub_title.dart';
 import 'package:shop_smart_app/widgets/custom_text_button.dart';
 import 'package:shop_smart_app/widgets/custom_text_field.dart';
 import 'package:shop_smart_app/widgets/custom_title_text.dart';
-import 'package:shop_smart_app/widgets/google_btn.dart';
 
 class LoginScreen extends StatefulWidget {
   static const routName = '/LoginScreen';
@@ -217,8 +216,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
 
                         SizedBox(height: size.height * 0.02),
-
-                        GoogleButton(),
 
                         SizedBox(height: size.height * 0.04),
 

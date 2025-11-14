@@ -47,7 +47,6 @@ class CartBottomCheckout extends StatelessWidget {
 
           const Gap(20),
 
-          // RIGHT SIDE — Checkout Button
           Expanded(
             child: CustomTextButton(
               borderRadius: 12,
@@ -59,7 +58,7 @@ class CartBottomCheckout extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => CheckoutCard(
                       totalPrice: double.parse(totalPrice),
-                      onPaymentSuccess: (data) async {
+                      onPaymentSuccess: (_) async {
                         await function();
                         CustomSnackbar.showSuccess(
                           context,

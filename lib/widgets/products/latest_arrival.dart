@@ -116,11 +116,6 @@ class LatestArrivalProductsWidget extends StatelessWidget {
                               } catch (e) {
                                 CustomSnackbar.showError(context, e.toString());
                               }
-
-                              CustomSnackbar.showSuccess(
-                                context,
-                                "Product is added to cart Successfully.",
-                              );
                             },
                             icon: Icon(
                               cartProvider.isProductInCart(

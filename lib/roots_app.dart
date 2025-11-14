@@ -54,7 +54,6 @@ class _RootsAppState extends State<RootsApp> {
         userProvider.fetchUserInfo(),
       });
       Future.wait({cartProvider.fetchCart(), wishlistProvider.fetchWishlist()});
-    } catch (error) {
     } finally {
       setState(() {
         isLoading = false;

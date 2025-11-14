@@ -64,7 +64,7 @@ class _CustomHeartButtonWidgetState extends State<CustomHeartButtonWidget> {
           }
         },
         icon: isLoading
-            ? CircularProgressIndicator()
+            ? Center(child: CircularProgressIndicator(strokeWidth: 4))
             : wishListProvider.isProductInWishlist(productId: widget.productId)
             ? Icon(IconlyBold.heart, size: widget.size, color: Colors.redAccent)
             : Icon(

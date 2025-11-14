@@ -138,11 +138,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                             e.toString(),
                                           );
                                         }
-
-                                        CustomSnackbar.showSuccess(
-                                          context,
-                                          "Product is added to cart Successfully.",
-                                        );
                                       },
                                       icon: Icon(
                                         cartProvider.isProductInCart(

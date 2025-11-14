@@ -1,9 +1,11 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_smart_app/models/cart_model.dart';
+import 'package:shop_smart_app/services/my_app_methods.dart';
 import 'package:shop_smart_app/widgets/custom_snack_bar_widget.dart';
-
 import 'package:uuid/uuid.dart';
 
 import '../models/product_model.dart';
@@ -26,7 +28,11 @@ class CartProvider with ChangeNotifier {
   }) async {
     final User? user = _auth.currentUser;
     if (user == null) {
-      CustomSnackbar.showError(context, "No user found");
+      MyAppMethods.showErrorORWarningDialog(
+        context: context,
+        subtitle: "No user found",
+        fct: () {},
+      );
       return;
     }
     final uid = user.uid;
@@ -34,10 +40,11 @@ class CartProvider with ChangeNotifier {
     try {
       usersDB.doc(uid).update({
         'userCart': FieldValue.arrayUnion([
-          {"cartId": cartId, 'productId': productId, 'quantity': qty},
+          {"cartId": cartId, 'productId': productId, 'quantity': 1},
         ]),
       });
       await fetchCart();
+      CustomSnackbar.showSuccess(context, "Item has been added to cart");
     } catch (e) {
       rethrow;
     }
@@ -46,6 +53,7 @@ class CartProvider with ChangeNotifier {
   Future<void> fetchCart() async {
     User? user = _auth.currentUser;
     if (user == null) {
+      log("the function has been called and the user is null");
       _cartItems.clear();
       return;
     }

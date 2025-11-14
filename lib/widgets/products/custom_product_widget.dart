@@ -133,11 +133,6 @@ class _CustomProductWidgetState extends State<CustomProductWidget> {
                               } catch (e) {
                                 CustomSnackbar.showError(context, e.toString());
                               }
-
-                              CustomSnackbar.showSuccess(
-                                context,
-                                "Product is added to cart Successfully.",
-                              );
                             },
                             child: Padding(
                               padding: EdgeInsets.all(8.0),
