@@ -115,7 +115,7 @@ git clone https://github.com/your-username/shop_smart_app.git
 ### 2. Install dependencies
 ```flutter pub get```
 
-3. Run the application
+### 3. Run the application
 ```flutter run```
 
 
